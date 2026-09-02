@@ -1,0 +1,45 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    image: nginx:0.1
+    ports:
+      - "443:443"
+    networks:
+      - inception
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    image: wordpress:0.1
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    image: mariadb:0.1
+    networks:
+      - inception
+    volumes:
+      - mariadb:/var/lib/mysql
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jel-ghna/data/wordpress
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jel-ghna/data/mariadb
