@@ -5,6 +5,7 @@ WORKDIR /usr/local/app
 RUN apt update
 #RUN apt -y install tini
 RUN apt -y install wordpress php-fpm
+RUN apt -y install curl mariadb-client
 
 RUN sed -i 's|^listen = .*|listen = 9000|' /etc/php/8.4/fpm/pool.d/www.conf
 

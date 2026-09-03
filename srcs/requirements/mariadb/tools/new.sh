@@ -2,24 +2,27 @@
 
 set -e
 
-echo "===== MY ENTRYPOINT IS RUNNING ====="
+echo "===== 1: ENTRYPOINT STARTED ====="
 
 DATADIR="/var/lib/mysql"
-
-mkdir -p /run/mysqld
-chown mysql:mysql /run/mysqld
 
 echo "===== 2: DATADIR=$DATADIR ====="
 echo "===== 3: CHECKING MYSQL DIRECTORY ====="
 
 if [ ! -d "$DATADIR/mysql" ]; then
+
     echo "===== 4: MYSQL DIRECTORY DOES NOT EXIST ====="
 
+    mkdir -p /run/mysqld
+    chown mysql:mysql /run/mysqld
+
     echo "===== 5: RUNNING mariadb-install-db ====="
+
     mariadb-install-db \
         --user=mysql \
         --datadir="$DATADIR" \
         --skip-test-db
+
     echo "===== 6: mariadb-install-db FINISHED ====="
 
     echo "Starting temporary MariaDB server..."
@@ -29,10 +32,11 @@ if [ ! -d "$DATADIR/mysql" ]; then
         --datadir="$DATADIR" \
         --skip-networking \
         --socket=/run/mysqld/mysqld.sock &
-    
+
     pid="$!"
 
     echo "===== 7: TEMP SERVER STARTED, PID=$pid ====="
+
     echo "Waiting for MariaDB to start..."
 
     until mariadb-admin \
@@ -62,18 +66,16 @@ EOF
 
     echo "===== 9: SQL FINISHED ====="
 
-    echo "Stopping temporary MariaDB server..."
-
     mariadb-admin \
         --socket=/run/mysqld/mysqld.sock \
         -u root \
         -p"${MYSQL_ROOT_PASSWORD}" shutdown
 
     wait "$pid"
+
     echo "===== 10: TEMP SERVER STOPPED ====="
 fi
 
 echo "===== 11: STARTING FINAL MARIADB ====="
 
 exec mariadbd --user=mysql --console
-
