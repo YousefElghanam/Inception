@@ -1,25 +1,29 @@
-all: nginx wordpress mariadb cleanup run
+COMPOSE = docker compose -f srcs/docker-compose.yml
 
-nginx:
-	docker build -t nginx srcs/requirements/nginx/
+all: up
 
-wordpress:
-	@echo 'TODO: wordpress'
+build:
+	$(COMPOSE) build
 
-mariadb:
-	@echo 'TODO: mariadb'
+up:
+	$(COMPOSE) up -d
 
-cleanup:
-	docker system prune -f
+down:
+	$(COMPOSE) down
 
-run:
-	@echo 'TODO: run' # here we use docker compose??
+start:
+	$(COMPOSE) start
+
+stop:
+	$(COMPOSE) stop
+
+restart:
+	$(COMPOSE) restart
 
 clean:
-	@echo 'TODO: make clean'
+	$(COMPOSE) down
 
 fclean:
-	# Care, this will remove all docker stuff.
-	# Better delete all containers, images and volumes one by one
-	docker system prune -f -a --volumes 
+	$(COMPOSE) down --rmi all
 
+re: fclean all
