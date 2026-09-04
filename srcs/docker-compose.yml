@@ -18,6 +18,8 @@ services:
       - inception
     volumes:
       - wordpress:/usr/share/wordpress
+    env_file:
+      - ./requirements/wordpress/.env
 
   mariadb:
     restart: always
